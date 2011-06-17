@@ -8,7 +8,7 @@ var TiDrop = {
 		yCurrent: 0,
 		xCurrent: 0
 	},
-	init: function(_element, _container, _callback, _onStart, _onEnd) {
+	init: function(_element, _container, _callback) {
 		_element.addEventListener("touchstart", function(e) { TiDrop.touchHandler(e); }, false );
 		_element.addEventListener("touchmove", function(e) { TiDrop.touchHandler(e); }, false );
 		_element.addEventListener("touchend", function(e) { TiDrop.touchHandler(e); }, false );
@@ -23,73 +23,58 @@ var TiDrop = {
 		} else {
 			this.callback = false;
 		}
-		
-		if(_onStart && typeof _onStart == "function") {
-			this.onStart = _onStart;
-		} else {
-			this.onStart = false;
-		}
-		
-		if(_onEnd && typeof _onEnd == "function") {
-			this.onEnd = _onEnd;
-		} else {
-			this.onEnd = false;
-		}
 	},
 	touchHandler: function(_event) {
 		if(_event.type == "touchstart") {
-			if(this.touching){
-				alert('already touching!');
-			}else{
+			if(!this.touching) {
 				this.touching = true;
 				this.element = _event.source;
-				
+
 				switch(Ti.UI.orientation){
 					case Ti.UI.PORTRAIT:
 					case Ti.UI.UPSIDE_PORTRAIT:
-						this.position.elementYStart = this.element.top; 
+						this.position.elementYStart = this.element.top;
 						this.position.elementXStart = this.element.left;
 						break;
 					case Ti.UI.LANDSCAPE_RIGHT:
 					case Ti.UI.LANDSCAPE_LEFT:
-						this.position.elementYStart = this.element.left; 
-						this.position.elementXStart = this.element.top; 
+						this.position.elementYStart = this.element.left;
+						this.position.elementXStart = this.element.top;
 						break;
 				}
-				
+
 				this.position.yStart = parseInt(_event.globalPoint.y, 10);
 				this.position.xStart = parseInt(_event.globalPoint.x, 10);
 			}
-			
+
 		} else if(_event.type == "touchmove") {
-			
 			if(this.touching){
 				this.position.yCurrent = parseInt(_event.globalPoint.y, 10);
 				this.position.xCurrent = parseInt(_event.globalPoint.x, 10);
-	
+
 				var yDistance = this.position.yCurrent - this.position.yStart;
 				var xDistance = this.position.xCurrent - this.position.xStart;
-				
-				switch(Ti.UI.orientation){
+
+				switch(Ti.UI.orientation) {
 					case Ti.UI.PORTRAIT:
-						_event.source.top = this.position.elementYStart + yDistance; 
-						_event.source.left = this.position.elementXStart + xDistance; 
+						_event.source.top = this.position.elementYStart + yDistance;
+						_event.source.left = this.position.elementXStart + xDistance;
 						break;
 					case Ti.UI.UPSIDE_PORTRAIT:
-						_event.source.top = this.position.elementYStart - yDistance; 
-						_event.source.left = this.position.elementXStart - xDistance; 
+						_event.source.top = this.position.elementYStart - yDistance;
+						_event.source.left = this.position.elementXStart - xDistance;
 						break;
 					case Ti.UI.LANDSCAPE_RIGHT:
-						_event.source.left = this.position.elementYStart + yDistance; 
-						_event.source.top = this.position.elementXStart - xDistance; 
+						_event.source.left = this.position.elementYStart + yDistance;
+						_event.source.top = this.position.elementXStart - xDistance;
 						break;
 					case Ti.UI.LANDSCAPE_LEFT:
-						_event.source.left = this.position.elementYStart - yDistance; 
-						_event.source.top = this.position.elementXStart + xDistance; 
+						_event.source.left = this.position.elementYStart - yDistance;
+						_event.source.top = this.position.elementXStart + xDistance;
 						break;
 				}
 			}
-			
+
 		} else if(_event.type == "touchend" || _event.type == "touchcancel") {
 			if(this.callback) {
 				var _data = {
